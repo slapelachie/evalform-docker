@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: evalform-app
+  name: evalform-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: evalform-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: evalform-app
+    spec:
+      containers:
+        - env:
+            - name: EVALFORM_ADMIN
+              value: admin@evalform.com
+            - name: EVALFORM_ADMIN_PASSWORD
+              value: GEYyHaLz24CLogdi6x6E
+          image: australia-southeast2-docker.pkg.dev/infs3208-431702/evalform-repo/evalform-app:v1
+          name: evalform-app
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/www/evalform/.env
+              name: evalform-codeigniter-env-volume
+              subPath: codeigniter.env
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            name: evalform-codeigniter-env
+          name: evalform-codeigniter-env-volume
